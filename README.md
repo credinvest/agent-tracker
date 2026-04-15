@@ -13,6 +13,8 @@ A personal dashboard for tracking AI agent sessions across **Cursor** and **Clau
 - **Dark-themed dashboard** with stat cards, 7-day activity chart, radial effort gauge, and filterable session table
 - **Deploys to Vercel** as a read-only snapshot of your data
 
+<img width="870" height="672" alt="Screenshot 2026-04-14 at 5 14 08 PM" src="https://github.com/user-attachments/assets/c3ee850e-9189-4237-84c4-8522585f63f7" />
+
 ## Prerequisites
 
 - **Node.js** 18+ and npm
