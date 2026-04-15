@@ -39,9 +39,9 @@ function saveRuns(runs) {
 }
 
 const ALLOWED_FIELDS = [
-  'id', 'tool', 'task', 'time', 'status', 'workspace',
+  'id', 'tool', 'task', 'time', 'status', 'workspace', 'workspacePath',
   'mode', 'linesAdded', 'linesRemoved', 'filesChanged',
-  'contextUsagePercent', 'subtitle',
+  'contextUsagePercent', 'subtitle', 'link', 'sessionPath',
 ];
 
 function pickFields(obj) {
@@ -82,12 +82,15 @@ export async function POST(request) {
           time: run.time || new Date().toISOString(),
           status: run.status || 'running',
           workspace: run.workspace || null,
+          workspacePath: run.workspacePath || null,
           mode: run.mode || null,
           linesAdded: run.linesAdded ?? null,
           linesRemoved: run.linesRemoved ?? null,
           filesChanged: run.filesChanged ?? null,
           contextUsagePercent: run.contextUsagePercent ?? null,
           subtitle: run.subtitle || null,
+          link: run.link || null,
+          sessionPath: run.sessionPath || null,
         });
       }
     }

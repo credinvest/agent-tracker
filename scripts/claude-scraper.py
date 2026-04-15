@@ -155,6 +155,9 @@ def scan_all_sessions():
             subtitle_parts.append(', '.join(parsed['tools_used'][:5]))
         subtitle = ' -- '.join(subtitle_parts) if subtitle_parts else None
 
+        session_path = str(audit_path.parent)
+        link = f'file://{session_path}'
+
         session = {
             'id': stable_id,
             'tool': 'claude',
@@ -168,6 +171,8 @@ def scan_all_sessions():
             'filesChanged': None,
             'contextUsagePercent': None,
             'subtitle': subtitle,
+            'link': link,
+            'sessionPath': session_path,
         }
 
         all_sessions.append(session)

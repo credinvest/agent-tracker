@@ -59,7 +59,7 @@ def read_vscdb(db_path):
         log(f'Warning reading {db_path.name}: {e}')
     return results
 
-def extract_session(comp, workspace_name=None):
+def extract_session(comp, workspace_name=None, workspace_path=None):
     title = (
         comp.get('name') or comp.get('title') or
         comp.get('query', '')[:80] or comp.get('text', '')[:80] or ''
@@ -118,6 +118,13 @@ def extract_session(comp, workspace_name=None):
     else:
         context_pct = None
 
+    composer_id = comp.get('composerId')
+    link = None
+    if workspace_path and composer_id:
+        link = f'cursor://composer/{composer_id}'
+    elif workspace_path:
+        link = f'cursor://file/{workspace_path}'
+
     return {
         'id': stable_id,
         'tool': 'cursor',
@@ -125,15 +132,17 @@ def extract_session(comp, workspace_name=None):
         'time': time_str,
         'status': status,
         'workspace': workspace_name,
+        'workspacePath': workspace_path,
         'mode': mode,
         'linesAdded': lines_added,
         'linesRemoved': lines_removed,
         'filesChanged': files_changed,
         'contextUsagePercent': context_pct,
         'subtitle': subtitle,
+        'link': link,
     }
 
-def extract_from_data(data, workspace_name=None):
+def extract_from_data(data, workspace_name=None, workspace_path=None):
     sessions = []
     if isinstance(data, dict):
         composers = data.get('allComposers', data.get('composers', []))
@@ -141,13 +150,13 @@ def extract_from_data(data, workspace_name=None):
             composers = list(composers.values())
         for comp in composers:
             if isinstance(comp, dict):
-                s = extract_session(comp, workspace_name)
+                s = extract_session(comp, workspace_name, workspace_path)
                 if s:
                     sessions.append(s)
     elif isinstance(data, list):
         for item in data:
             if isinstance(item, dict):
-                s = extract_session(item, workspace_name)
+                s = extract_session(item, workspace_name, workspace_path)
                 if s:
                     sessions.append(s)
     return sessions
@@ -171,17 +180,23 @@ def scan_all():
             if not db_path.exists():
                 continue
             ws_name = ws.name[:8]
+            ws_path = None
             ws_json = ws / 'workspace.json'
             if ws_json.exists():
                 try:
                     with open(ws_json) as f:
                         info = json.load(f)
-                        ws_name = Path(info.get('folder', '')).name or ws_name
+                        folder = info.get('folder', '')
+                        if folder.startswith('file:///'):
+                            ws_path = folder[len('file://'):]
+                            ws_name = Path(ws_path).name or ws_name
+                        elif folder:
+                            ws_name = Path(folder).name or ws_name
                 except Exception:
                     pass
             for key, value in read_vscdb(db_path).items():
                 if value and isinstance(value, (dict, list)):
-                    all_sessions.extend(extract_from_data(value, ws_name))
+                    all_sessions.extend(extract_from_data(value, ws_name, ws_path))
 
     seen = set()
     unique = []

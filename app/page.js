@@ -276,9 +276,35 @@ export default function Dashboard() {
                         {TOOLS[r.tool] || r.tool}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60">
-                      <div>{r.task}</div>
-                      {r.subtitle && <div className="text-[11px] text-gray-600 mt-0.5">{r.subtitle}</div>}
+                    <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60 max-w-md">
+                      <div className="flex items-start gap-1.5">
+                        <span className="flex-1 min-w-0">
+                          <span className="block truncate">{r.task}</span>
+                          {r.subtitle && <span className="block text-[11px] text-gray-600 mt-0.5 truncate">{r.subtitle}</span>}
+                        </span>
+                        {(r.link || r.workspacePath) && (
+                          <a
+                            href={r.link || `cursor://file/${r.workspacePath}`}
+                            title={r.link ? `Open in ${r.tool === 'claude' ? 'Finder' : 'Cursor'}` : `Open workspace: ${r.workspacePath}`}
+                            className="shrink-0 mt-0.5 text-gray-600 hover:text-[#6c63ff] transition-colors"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                          </a>
+                        )}
+                      </div>
+                      {(r.workspace || r.workspacePath) && (
+                        <div className="mt-1">
+                          <a
+                            href={r.workspacePath ? `cursor://file/${r.workspacePath}` : undefined}
+                            className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#242834] ${
+                              r.workspacePath ? 'text-gray-400 hover:text-[#6c63ff] hover:bg-[#2e3345] cursor-pointer transition-colors' : 'text-gray-600'
+                            }`}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                            {r.workspace}
+                          </a>
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60">
                       {r.mode ? (
