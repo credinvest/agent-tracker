@@ -1,0 +1,19 @@
+{
+  "name": "agent-tracker",
+  "version": "1.0.0",
+  "description": "Personal dashboard for tracking AI agent sessions across Cursor and Claude",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "next": "14.2.5",
+    "postcss": "^8.5.9",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tailwindcss": "^4.2.2"
+  }
+}

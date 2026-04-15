@@ -1,0 +1,4 @@
+scripts/
+data/.cursor-watcher-cache.json
+data/.cursor-watcher.pid
+data/watcher.log
