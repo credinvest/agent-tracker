@@ -118,11 +118,8 @@ def extract_session(comp, workspace_name=None, workspace_path=None):
     else:
         context_pct = None
 
-    composer_id = comp.get('composerId')
     link = None
-    if workspace_path and composer_id:
-        link = f'cursor://composer/{composer_id}'
-    elif workspace_path:
+    if workspace_path:
         link = f'cursor://file/{workspace_path}'
 
     return {

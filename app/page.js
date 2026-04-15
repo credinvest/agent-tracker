@@ -254,6 +254,7 @@ export default function Dashboard() {
               <tr>
                 <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Tool</th>
                 <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Task</th>
+                <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Workspace</th>
                 <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Mode</th>
                 <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Effort</th>
                 <th className="text-left px-4 py-2.5 text-[11px] text-gray-500 uppercase tracking-wider border-b border-[#2e3345] font-medium">Started</th>
@@ -263,7 +264,7 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={7} className="text-center text-gray-500 py-10">No runs yet. Click + Add Run or import data.</td></tr>
+                <tr><td colSpan={8} className="text-center text-gray-500 py-10">No runs yet. Click + Add Run or import data.</td></tr>
               )}
               {filtered.map(r => {
                 const cx = computeComplexity(r);
@@ -276,35 +277,12 @@ export default function Dashboard() {
                         {TOOLS[r.tool] || r.tool}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60 max-w-md">
-                      <div className="flex items-start gap-1.5">
-                        <span className="flex-1 min-w-0">
-                          <span className="block truncate">{r.task}</span>
-                          {r.subtitle && <span className="block text-[11px] text-gray-600 mt-0.5 truncate">{r.subtitle}</span>}
-                        </span>
-                        {(r.link || r.workspacePath) && (
-                          <a
-                            href={r.link || `cursor://file/${r.workspacePath}`}
-                            title={r.link ? `Open in ${r.tool === 'claude' ? 'Finder' : 'Cursor'}` : `Open workspace: ${r.workspacePath}`}
-                            className="shrink-0 mt-0.5 text-gray-600 hover:text-[#6c63ff] transition-colors"
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                          </a>
-                        )}
-                      </div>
-                      {(r.workspace || r.workspacePath) && (
-                        <div className="mt-1">
-                          <a
-                            href={r.workspacePath ? `cursor://file/${r.workspacePath}` : undefined}
-                            className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[#242834] ${
-                              r.workspacePath ? 'text-gray-400 hover:text-[#6c63ff] hover:bg-[#2e3345] cursor-pointer transition-colors' : 'text-gray-600'
-                            }`}
-                          >
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-                            {r.workspace}
-                          </a>
-                        </div>
-                      )}
+                    <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60 max-w-sm">
+                      <div className="truncate">{r.task}</div>
+                      {r.subtitle && <div className="text-[11px] text-gray-600 mt-0.5 truncate">{r.subtitle}</div>}
+                    </td>
+                    <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60 whitespace-nowrap">
+                      <WorkspaceLink run={r} />
                     </td>
                     <td className="px-4 py-3 text-sm border-b border-[#2e3345]/60">
                       {r.mode ? (
@@ -394,6 +372,45 @@ function StatCard({ label, value, color, sub }) {
       <div className="text-xs text-gray-600 mt-1">{sub}</div>
     </div>
   );
+}
+
+function WorkspaceLink({ run }) {
+  const r = run;
+  if (r.tool === 'cursor' && r.workspacePath) {
+    return (
+      <a
+        href={`cursor://file/${r.workspacePath}`}
+        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-teal-400 transition-colors group/ws"
+        title={`Open in Cursor: ${r.workspacePath}`}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-500/60 group-hover/ws:text-teal-400"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <span>{r.workspace}</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 group-hover/ws:opacity-100 transition-opacity"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    );
+  }
+  if (r.tool === 'cursor' && r.workspace) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-gray-600">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        {r.workspace}
+      </span>
+    );
+  }
+  if (r.tool === 'claude' && r.sessionPath) {
+    return (
+      <a
+        href={`file://${r.sessionPath}`}
+        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#9b94ff] transition-colors group/ws"
+        title="Open session folder"
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#6c63ff]/60 group-hover/ws:text-[#9b94ff]"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>Cowork</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 group-hover/ws:opacity-100 transition-opacity"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    );
+  }
+  return <span className="text-gray-700 text-xs">--</span>;
 }
 
 function EffortBar({ value }) {
