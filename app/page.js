@@ -8,6 +8,11 @@ const MODE_COLORS = { agent: 'bg-purple-500/20 text-purple-300', chat: 'bg-sky-5
 
 function clamp(min, max, v) { return Math.min(max, Math.max(min, v)); }
 
+function localDateStr(date) {
+  const d = date || new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function computeComplexity(r) {
   if (!r.linesAdded && !r.linesRemoved && !r.filesChanged && !r.contextUsagePercent) return null;
   return Math.round(clamp(0, 100,
@@ -111,7 +116,7 @@ export default function Dashboard() {
   }
 
   // Stats
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   const todayRuns = runs.filter(r => r.time?.slice(0, 10) === today);
   const running = runs.filter(r => r.status === 'running').length;
   const claudeTotal = runs.filter(r => r.tool === 'claude').length;
@@ -128,7 +133,7 @@ export default function Dashboard() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
+    days.push(localDateStr(d));
   }
   const maxDay = Math.max(1, ...days.map(d => runs.filter(r => r.time?.slice(0, 10) === d).length));
 
