@@ -18,6 +18,7 @@ import json
 import os
 import re
 import sys
+import time as _time
 import hashlib
 import argparse
 import platform
@@ -138,6 +139,14 @@ def scan_all_sessions():
             except (TypeError, IndexError):
                 pass
 
+        age_seconds = _time.time() - mtime
+        if age_seconds < 120:
+            status = 'running'
+        elif age_seconds < 1800:
+            status = 'idle'
+        else:
+            status = 'done'
+
         total_msgs = parsed['user_msgs'] + parsed['assistant_msgs']
         stable_id = hashlib.md5(f"claude-{parsed['title']}-{time_str}".encode()).hexdigest()[:8]
 
@@ -163,7 +172,7 @@ def scan_all_sessions():
             'tool': 'claude',
             'task': parsed['title'],
             'time': time_str,
-            'status': 'done',
+            'status': status,
             'workspace': None,
             'mode': 'agent',
             'linesAdded': None,

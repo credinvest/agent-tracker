@@ -83,11 +83,20 @@ def extract_session(comp, workspace_name=None, workspace_path=None):
     else:
         time_str = datetime.now().isoformat()[:16]
 
+    last_active = comp.get('lastUpdatedAt') or comp.get('createdAt') or 0
+    if isinstance(last_active, (int, float)) and last_active > 1e12:
+        last_active = last_active / 1000
+    age_seconds = (time.time() - last_active) if isinstance(last_active, (int, float)) else 99999
+
     status = 'done'
     if comp.get('isRunning') or comp.get('status') == 'running':
         status = 'running'
     elif comp.get('error') or comp.get('status') == 'error':
         status = 'failed'
+    elif age_seconds < 120:
+        status = 'running'
+    elif age_seconds < 1800:
+        status = 'idle'
 
     stable_id = hashlib.md5(f"cursor-{title}-{time_str}".encode()).hexdigest()[:8]
 
@@ -309,7 +318,7 @@ def watch_loop(api_url, interval, include_claude=True):
             for s in sessions:
                 if s['id'] in new_ids:
                     changed.append(s)
-                elif s['status'] == 'running':
+                elif s['status'] in ('running', 'idle'):
                     changed.append(s)
 
             if changed:
